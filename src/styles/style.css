@@ -26,11 +26,14 @@ body {
     flex: 3;
 
     height: 100%;
+    overflow: auto;
 }
 
 .cm-editor {
     height: 100%;
     width: 100%;
+
+    padding: 15px;
 }
 
 .cube-display {
