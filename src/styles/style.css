@@ -12,7 +12,7 @@ body {
 
     padding: 10px;
 
-    /* background-color: #2a313d; */
+    background-color: #313640;
 }
 
 .container {
@@ -22,11 +22,17 @@ body {
     height: 100%;
 }
 
+/* code editor */
 #editor {
     flex: 3;
 
     height: 100%;
+
     overflow: auto;
+
+    border-radius: 8px;
+
+    position: relative;
 }
 
 .cm-editor {
@@ -36,6 +42,32 @@ body {
     padding: 15px;
 }
 
+#editor button {
+    font-size: medium;
+    color: white;
+    background-color: #313640;
+    
+    border: none;
+    border-radius: 5px;
+    
+    padding: 8px 12px;
+    
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    z-index: 50;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    
+    transition: transform 0.1s;
+}
+
+#editor button:active {
+    background-color: #2c3039;
+    transform: scale(0.95);
+}
+
+/* cube display */
 .cube-display {
     flex: 5;
 }
