@@ -6,32 +6,24 @@
 
 body {
     font-size: 16px;
-
     width: 100vw;
     height: 100vh;
-
     padding: 15px;
-
     background-color: #313640;
 }
 
 .container {
     display: flex;
     gap: 15px;
-
     height: 100%;
 }
 
 /* code editor */
 #editor {
     flex: 1;
-
     height: 100%;
-
     overflow: auto;
-
     border-radius: 8px;
-
     position: relative;
 }
 
@@ -70,9 +62,54 @@ body {
 /* cube display */
 #glCanvas {
     flex: 1;
-
     border-radius: 8px;
-
     height: 100%;
     aspect-ratio: 1;
+}
+
+/* range sliders */
+.cube-display {
+    position: relative;
+}
+
+.slider {
+    appearance: none;
+
+    height: 7.5px;
+    width: 75%;
+
+    background: #6d6d6db0;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+
+    position: absolute;
+}
+
+.horizontal {
+    left: 50%;
+    bottom: 5%;
+    transform: translate(-50%, 0);
+}
+
+.vertical {
+    top: 50%;
+
+    transform: translate(75%, 0) rotate(270deg);
+}
+
+/* .slider::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+    background: #cececed5;
+    cursor: pointer;
+    border-radius: 50%;
+} */
+
+.slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #cececed5;
+    cursor: pointer;
+    border-radius: 50%;
 }

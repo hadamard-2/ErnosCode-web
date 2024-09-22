@@ -53,6 +53,10 @@ function main() {
         return;
     }
 
+    canvas.width = canvas.clientWidth
+    canvas.height = canvas.clientHeight
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
     const shaderProgram = initShaderProgram(gl, vsSource, fsSource);
 
     const programInfo = {

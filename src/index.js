@@ -28,9 +28,12 @@ const view = new EditorView({
 function executeCode() {
     // Get the code from the editor
     const code = view.state.doc.toString();
+    // TODO
+    // import the functions you want from cubeDisplay.js
+    const imports = "<imports go here>\n\n";
 
     try {
-        eval(code);
+        eval(imports + code);
     } catch (error) {
         console.error("Error executing code:", error);
     }

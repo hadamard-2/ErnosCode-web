@@ -16,7 +16,11 @@
         <div id="editor">
             <button class="run-button">▶️ Run</button>
         </div>
-        <canvas id="glCanvas"></canvas>
+        <div class="cube-display">
+            <canvas id="glCanvas"></canvas>
+            <input class="horizontal slider" type="range" min="-180" max="180" steps="1">
+            <input class="vertical slider" type="range" min="-90" max="90" value="24" steps="1">
+        </div>
     </div>
 </body>
 
