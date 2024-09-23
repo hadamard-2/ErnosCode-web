@@ -9,7 +9,7 @@ import { rotate } from "./cubeDisplay.ts";
 
 // Create an initial state with some default code
 const initialState = EditorState.create({
-    doc: "// you can perform rotations here",
+    doc: "// control your Rubik's Cube with code",
     extensions: [
         keymap.of(defaultKeymap),
         javascript(),
@@ -26,15 +26,11 @@ const view = new EditorView({
     parent: document.getElementById("editor")
 });
 
-function executeCode() {
-    // Get the code from the editor
+async function executeCode() {
     const code = view.state.doc.toString();
-    // const imports = 'import { rotate } from "cubeDisplay.ts" \n';
 
     try {
-        // Directly execute the code using `new Function`
         const execute = new Function('rotate', code); 
-        // Pass the `rotate` function as an argument
         execute(rotate);
     } catch (error) {
         console.error("Error executing code:", error);
