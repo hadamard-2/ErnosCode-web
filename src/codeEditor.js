@@ -5,10 +5,11 @@ import { defaultKeymap } from "@codemirror/commands";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { closeBrackets } from "@codemirror/autocomplete";
+import { rotate } from "./cubeDisplay.ts";
 
 // Create an initial state with some default code
 const initialState = EditorState.create({
-    doc: "function foo() {\n  console.log(123);\n}\n\nfoo();",
+    doc: "// you can perform rotations here",
     extensions: [
         keymap.of(defaultKeymap),
         javascript(),
@@ -28,12 +29,13 @@ const view = new EditorView({
 function executeCode() {
     // Get the code from the editor
     const code = view.state.doc.toString();
-    // TODO
-    // import the functions you want from cubeDisplay.js
-    const imports = 'import { rotate } from "cubeDisplay.ts" \n';
+    // const imports = 'import { rotate } from "cubeDisplay.ts" \n';
 
     try {
-        eval(imports + code);
+        // Directly execute the code using `new Function`
+        const execute = new Function('rotate', code); 
+        // Pass the `rotate` function as an argument
+        execute(rotate);
     } catch (error) {
         console.error("Error executing code:", error);
     }
