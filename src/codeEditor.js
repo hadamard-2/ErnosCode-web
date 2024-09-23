@@ -30,7 +30,7 @@ function executeCode() {
     const code = view.state.doc.toString();
     // TODO
     // import the functions you want from cubeDisplay.js
-    const imports = "<imports go here>\n\n";
+    const imports = 'import { rotate } from "cubeDisplay.ts" \n';
 
     try {
         eval(imports + code);
