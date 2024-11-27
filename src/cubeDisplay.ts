@@ -32,7 +32,7 @@ void main() {
 class Cubie {
     static vao: WebGLVertexArrayObject;
     private worldMatrix: mat4 = mat4.create();
-    private positionVec: vec3;
+    public positionVec: vec3;
     private scaleVec: vec3 = vec3.fromValues(1, 1, 1);
     private rotationQuat: quat = quat.create();
 
@@ -73,6 +73,16 @@ class Cubie {
         const incrementalQuat = quat.create();
         quat.setAxisAngle(incrementalQuat, rotationAxis, glMatrix.toRadian(worldRotationAngle));
         quat.multiply(this.rotationQuat, incrementalQuat, this.rotationQuat);
+        
+        // Update positionVec by applying the rotation
+        const rotationMatrix = mat4.create();
+        mat4.fromQuat(rotationMatrix, incrementalQuat);
+        vec3.transformMat4(this.positionVec, this.positionVec, rotationMatrix);
+        
+        // Round the positionVec to handle floating-point precision
+        this.positionVec[0] = Math.round(this.positionVec[0] * 100) / 100;
+        this.positionVec[1] = Math.round(this.positionVec[1] * 100) / 100;
+        this.positionVec[2] = Math.round(this.positionVec[2] * 100) / 100;
     }
 
     toString() {
@@ -188,6 +198,9 @@ function loadScene() {
         // Check for ongoing rotation
         if (turns !== 0) {
             angle += speed;
+            if (angle >= 90) {
+                angle = 90; // Clamp the angle to 90 degrees
+            }
         } else if (rotationQueue.length > 0) {
             // Get the next rotation from the queue if no ongoing rotation
             const { layer, direction } = rotationQueue.shift()!;
@@ -202,6 +215,8 @@ function loadScene() {
                 case 2:
                     turns = 2;
                     break;
+                default:
+                    turns = 0;
             }
 
             layerToRotate = layer;
@@ -254,6 +269,9 @@ function loadScene() {
             cubiesToRotate.forEach(index => cubies[index].applyRotation(turns * 90, axisOfRotation));
             angle = 0;
             turns = 0;
+        
+            // Update sideIndices after rotation
+            updateSideIndices(cubies, sideIndices);
         }
 
         requestAnimationFrame(renderScene);
@@ -271,75 +289,67 @@ function setupCanvas(gl: WebGL2RenderingContext, canvas: HTMLCanvasElement) {
     gl.enable(gl.DEPTH_TEST);
 }
 
+function updateSideIndices(cubies: Cubie[], sideIndices: Record<string, number[]>) {
+    // Clear existing indices
+    for (let key in sideIndices) {
+        sideIndices[key] = [];
+    }
+
+    cubies.forEach((cubie, index) => {
+        const [x, y, z] = cubie.positionVec.map(coord => Math.round(coord));
+
+        // Update for x-axis
+        if (x < 0) {
+            sideIndices["left"].push(index);
+        } else if (x === 0) {
+            sideIndices["middle"].push(index);
+        } else {
+            sideIndices["right"].push(index);
+        }
+
+        // Update for y-axis
+        if (y < 0) {
+            sideIndices["bottom"].push(index);
+        } else if (y === 0) {
+            sideIndices["equator"].push(index);
+        } else {
+            sideIndices["top"].push(index);
+        }
+
+        // Update for z-axis
+        if (z < 0) {
+            sideIndices["back"].push(index);
+        } else if (z === 0) {
+            sideIndices["standing"].push(index);
+        } else {
+            sideIndices["front"].push(index);
+        }
+    });
+}
+
 function createCubies() {
-    const COORDINATES = [-2.25, 0, 2.25]; // Positions for x, y, and z coordinates
+    const COORDINATES = [-2.25, 0, 2.25];
     const cubies: Cubie[] = [];
 
+    // Initialize empty sideIndices
     const sideIndices: Record<string, number[]> = {
-        // x
         "left": [], "middle": [], "right": [],
-        // y
         "bottom": [], "equator": [], "top": [],
-        // z
         "back": [], "standing": [], "front": [],
     };
 
-    // Populate side indices for a given cubie index
-    function populateSideIndices(index: number) {
-        const cubieLocation: string[] = [];
-
-        // x axis (index determines left, middle, right)
-        if (index < 9) {
-            sideIndices["left"].push(index);
-            cubieLocation.push("left");
-        } else if (index < 18) {
-            sideIndices["middle"].push(index);
-            cubieLocation.push("middle");
-        } else {
-            sideIndices["right"].push(index);
-            cubieLocation.push("right");
-        }
-
-        // y axis (determines bottom, equator, top)
-        if (index % 9 < 3) {
-            sideIndices["bottom"].push(index);
-            cubieLocation.push("bottom");
-        } else if (index % 9 < 6) {
-            sideIndices["equator"].push(index);
-            cubieLocation.push("equator");
-        } else {
-            sideIndices["top"].push(index);
-            cubieLocation.push("top");
-        }
-
-        // z axis (determines back, standing, front)
-        if (index % 3 === 0) {
-            sideIndices["back"].push(index);
-            cubieLocation.push("back");
-        } else if (index % 3 === 1) {
-            sideIndices["standing"].push(index);
-            cubieLocation.push("standing");
-        } else {
-            sideIndices["front"].push(index);
-            cubieLocation.push("front");
-        }
-
-        // showError(`cubie ${index}: ${cubieLocation}`);
-
-        return cubieLocation;
-    }
-
-    // Main loop to create cubies based on coordinates and index positions
+    // Populate initial sideIndices
     let index = 0;
     for (let x of COORDINATES) {
         for (let y of COORDINATES) {
             for (let z of COORDINATES) {
-                const cubieLocation = populateSideIndices(index);
-                cubies.push(new Cubie(x, y, z, cubieLocation));
+                cubies.push(new Cubie(x, y, z, []));
                 index++;
             }
         }
     }
+
+    updateSideIndices(cubies, sideIndices);
 
     return { cubies, sideIndices };
 }

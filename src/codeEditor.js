@@ -9,7 +9,8 @@ import { rotate } from "./cubeDisplay.ts";
 
 // Create an initial state with some default code
 const initialState = EditorState.create({
-    doc: "// control your Rubik's Cube with code",
+    doc: `// control your Rubik's Cube with code
+// e.g. rotate('front', 'CW')`,
     extensions: [
         keymap.of(defaultKeymap),
         javascript(),
