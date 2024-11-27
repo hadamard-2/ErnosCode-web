@@ -5,7 +5,9 @@ import { defaultKeymap } from "@codemirror/commands";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { closeBrackets } from "@codemirror/autocomplete";
+import { indentUnit } from "@codemirror/language";
 import { rotate } from "./cubeDisplay.ts";
+
 
 // Create an initial state with some default code
 const initialState = EditorState.create({
@@ -17,7 +19,8 @@ const initialState = EditorState.create({
         oneDark,
         lineNumbers(),
         EditorView.lineWrapping,
-        closeBrackets()
+        closeBrackets(),
+        indentUnit.of("\t")
     ]
 });
 
@@ -31,7 +34,7 @@ async function executeCode() {
     const code = view.state.doc.toString();
 
     try {
-        const execute = new Function('rotate', code); 
+        const execute = new Function('rotate', code);
         execute(rotate);
     } catch (error) {
         console.error("Error executing code:", error);
